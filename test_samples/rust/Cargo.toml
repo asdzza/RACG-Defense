@@ -1,0 +1,14 @@
+[package]
+name = "rust_code_repair"
+version = "0.1.0"
+edition = "2021"
+[lib]
+name = "your_project_name"
+path = "src/lib.rs"
+
+[dependencies]
+scraper = "0.12"        # For HTML parsing (replacing rsscraper)
+regex = "1.0"           # For regex operations (replacing regex_safe)
+serde_json = "1.0"      # For JSON handling (replacing serde_json_safe)
+rocket = "0.5.0-rc.2"   # For Rocket web framework (replacing rocket_safe)
+ndarray = "0.15"        # For N-dimensional array operations (replacing ndarray_v2)

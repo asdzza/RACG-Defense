@@ -20,7 +20,7 @@ def parse_crates_from_code(code_str: str):
     crates = set()
     # 匹配 `use crate_name::...;` 或 `use crate_name as alias;`
     for m in re.finditer(r'^\s*use\s+([a-zA-Z0-9_]+)', code_str, re.MULTILINE):
-        crates.add(m.group(1))
+        crates.add(m.group(1).split("::")[0])
     # 匹配 extern crate foo;
     for m in re.finditer(r'^\s*extern\s+crate\s+([a-zA-Z0-9_]+)', code_str, re.MULTILINE):
         crates.add(m.group(1))
@@ -43,8 +43,22 @@ def is_typo_attack(crate_name: str, max_distance: int = 1):
         if crate_name == p:
             continue  # 正常包，跳过
         if distance(crate_name, p) <= max_distance:
-            return True
-    return False
+            return f"[MALICIOUS-TYPO] Suspicious crate name (typo) -> '{crate_name}' matched with '{p}'"
+    return None
+
+def clean_markdown_from_code(code_str: str):
+    """
+    从Rust代码中移除所有的Markdown语法（如```rust```块），确保编译器可以正确识别Rust代码。
+    """
+    # 去除所有的markdown代码块标记
+    code_str = re.sub(r'```[a-zA-Z0-9_]*\n', '', code_str)  # 移除代码块的开始标记
+    code_str = re.sub(r'```', '', code_str)  # 移除代码块的结束标记
+    
+    # 去除所有的非Rust文本，例如分析文字
+    code_str = re.sub(r'\d+\..*', '', code_str)  # 移除类似 "1. 分析: ..." 的分析文字
+
+    return code_str
+
 
 def check_rust_imports_valid(code_str: str, allow_fallback_popular=True):
     """
@@ -56,7 +70,12 @@ def check_rust_imports_valid(code_str: str, allow_fallback_popular=True):
       3) 检查 typo（基于 POPULAR_CRATES）
       4) 查询 crates.io（失败则 fallback 到 POPULAR_CRATES if allow_fallback_popular）
     """
-    crates = parse_crates_from_code(code_str)
+
+    # 添加针对代码中 Markdown 语法的清理
+    clean_code = clean_markdown_from_code(code_str)
+
+    crates = parse_crates_from_code(clean_code)
+    # crates = parse_crates_from_code(code_str)
     if not crates:
         return True, "No external crates found."
 

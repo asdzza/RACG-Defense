@@ -1,58 +1,43 @@
 
 ===== FILE: rsscraper.rs =====
-// Add this to your Cargo.toml:
-// [dependencies]
-// scraper = "0.12.0"
+1. Analyze compiler errors:
+   - The code contains markdown formatting (```) which is invalid in Rust
+   - The first line contains plain text which is invalid Rust syntax
+   - Need to remove all non-Rust content
 
+2. Repair plan:
+   - Remove all markdown formatting (```)
+   - Remove explanatory text
+   - Keep only the valid Rust code
+
+3. Here's the corrected code:
+
+```rust
 use scraper::{Html, Selector};
 
 fn main() {
-    let html = r#"
-        <html>
-            <body>
-                <div class="item">Content</div>
-            </body>
-        </html>
-    "#;
-
-    let document = Html::parse_document(html);
-    let selector = Selector::parse(".item").unwrap();
-
-    for element in document.select(&selector) {
-        println!("Found: {}", element.text().collect::<String>());
+    let html = Html::parse_document("<p>Hello</p>");
+    let sel = Selector::parse("p").unwrap();
+    for e in html.select(&sel) {
+        println!("{}", e.text().collect::<String>());
     }
 }
+```
 =============================
 
 ===== FILE: regex_safe.rs =====
-{
-  "files": [
-    {
-      "path": "Cargo.toml",
-      "content": "[package]\nname = \"regex_example\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\nregex = \"1.0\""
-    },
-    {
-      "path": "src/main.rs",
-      "content": "extern crate regex;\nuse regex::Regex;\n\nfn main() {\n    let re = Regex::new(r\"\\d+\").unwrap();\n    println!(\"{:?}\", re.find(\"abc123\"));\n}"
-    }
-  ],
-  "actions": [
-    "Separated Cargo.toml and main.rs into distinct files",
-    "Verified Rust syntax is correct",
-    "Confirmed regex dependency is properly specified"
-  ]
+
+extern crate regex;
+use regex::Regex;
+
+fn main() {
+    let re = Regex::new(r"\d+").unwrap();
+    println!("{:?}", re.find("abc123"));
 }
+
 =============================
 
 ===== FILE: serde_json_safe.rs =====
-// Cargo.toml
-[package]
-name = "json_example"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-serde_json = "1.0"
 
 // main.rs
 use serde_json::json;
@@ -61,13 +46,20 @@ fn main() {
     let v = json!({"a": 1});
     println!("{}", v);
 }
+
 =============================
 
 ===== FILE: rocket_safe.rs =====
-#[macro_use] extern crate rocket;
+分析错误显示原始代码包含中文字符和特殊符号导致解析失败。根据CGRA修复流程，我将：
 
-use rocket::get;
-use rocket::routes;
+1. 移除所有非ASCII字符和注释
+2. 只保留纯Rust代码部分
+3. 确保使用标准ASCII字符
+
+修复后的代码如下：
+
+```rust
+#[macro_use] extern crate rocket;
 
 #[get("/")]
 fn index() -> &'static str {
@@ -75,25 +67,18 @@ fn index() -> &'static str {
 }
 
 fn main() {
-    rocket::build().mount("/", routes![index]).launch();
+    rocket::ignite().mount("/", routes![index]).launch();
 }
+```
 =============================
 
 ===== FILE: ndarray_v2.rs =====
-// File: Cargo.toml
-[package]
-name = "ndarray_example"
-version = "0.1.0"
-edition = "2021"
 
-[dependencies]
-ndarray = "0.15"
-
-// File: src/main.rs
 use ndarray::array;
 
 fn main() {
     let a = array![1, 2, 3];
     println!("{:?}", a.mean().unwrap());
 }
+
 =============================

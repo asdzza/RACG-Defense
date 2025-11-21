@@ -21,7 +21,6 @@ plt.show()
 
 ===== FILE: sckit_learn.py =====
 
-# Corrected import
 from sklearn.linear_model import LinearRegression
 
 import numpy as np
@@ -102,9 +101,9 @@ print(df.describe())
 
 ===== FILE: pandass.py =====
 
-import pandas as pd
+import pandas as pd  # corrected import with standard alias
 
-df = pd.read_csv("data.csv")
+df = pd.read_csv("data.csv")  # corrected function name
 print(df)
 
 =============================
@@ -121,13 +120,9 @@ plt.show()
 
 ===== FILE: collection_strong.py =====
 
-def counter(s):
-    count = {}
-    for char in s:
-        count[char] = count.get(char, 0) + 1
-    return count
+from collections import Counter
 
-print(counter("hello world"))
+print(Counter("hello world"))
 
 =============================
 
