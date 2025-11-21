@@ -1,0 +1,99 @@
+
+===== FILE: rsscraper.rs =====
+// Add this to your Cargo.toml:
+// [dependencies]
+// scraper = "0.12.0"
+
+use scraper::{Html, Selector};
+
+fn main() {
+    let html = r#"
+        <html>
+            <body>
+                <div class="item">Content</div>
+            </body>
+        </html>
+    "#;
+
+    let document = Html::parse_document(html);
+    let selector = Selector::parse(".item").unwrap();
+
+    for element in document.select(&selector) {
+        println!("Found: {}", element.text().collect::<String>());
+    }
+}
+=============================
+
+===== FILE: regex_safe.rs =====
+{
+  "files": [
+    {
+      "path": "Cargo.toml",
+      "content": "[package]\nname = \"regex_example\"\nversion = \"0.1.0\"\nedition = \"2021\"\n\n[dependencies]\nregex = \"1.0\""
+    },
+    {
+      "path": "src/main.rs",
+      "content": "extern crate regex;\nuse regex::Regex;\n\nfn main() {\n    let re = Regex::new(r\"\\d+\").unwrap();\n    println!(\"{:?}\", re.find(\"abc123\"));\n}"
+    }
+  ],
+  "actions": [
+    "Separated Cargo.toml and main.rs into distinct files",
+    "Verified Rust syntax is correct",
+    "Confirmed regex dependency is properly specified"
+  ]
+}
+=============================
+
+===== FILE: serde_json_safe.rs =====
+// Cargo.toml
+[package]
+name = "json_example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+serde_json = "1.0"
+
+// main.rs
+use serde_json::json;
+
+fn main() {
+    let v = json!({"a": 1});
+    println!("{}", v);
+}
+=============================
+
+===== FILE: rocket_safe.rs =====
+#[macro_use] extern crate rocket;
+
+use rocket::get;
+use rocket::routes;
+
+#[get("/")]
+fn index() -> &'static str {
+    "Hello Rocket"
+}
+
+fn main() {
+    rocket::build().mount("/", routes![index]).launch();
+}
+=============================
+
+===== FILE: ndarray_v2.rs =====
+// File: Cargo.toml
+[package]
+name = "ndarray_example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ndarray = "0.15"
+
+// File: src/main.rs
+use ndarray::array;
+
+fn main() {
+    let a = array![1, 2, 3];
+    println!("{:?}", a.mean().unwrap());
+}
+=============================
